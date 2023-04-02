@@ -1,35 +1,36 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, {useState, useEffect, useRef} from 'react';
+import './App.css';
+import SplashScreen from './SplashScreen';
+import ExamIntroScreen from './ExamIntroScreen';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [showExamIntroScreen, setExamIntroScreen] = useState(false);
+  const rootRef = useRef(null);
+  
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (rootRef.current && !rootRef.current.contains(event.target)) {
+        setExamIntroScreen(true);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    const timeoutId = setTimeout(() => {
+      setExamIntroScreen(true);
+    }, 3000);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      clearTimeout(timeoutId);
+    };
+  }, []);
 
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    <div ref={rootRef}>
+      {showExamIntroScreen ?  <ExamIntroScreen/> : <SplashScreen/>}
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
